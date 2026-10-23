@@ -1,4 +1,4 @@
-from node_doubly import Node
+from node import Node
 
 
 class Doubly:
@@ -10,9 +10,9 @@ class Doubly:
         node = Node(data)
 
         if self.__head:
-            node.next = self.__head       # new node -> old head
-            self.__head.prev = node       # old head <- new node
-            self.__head = node            # head moves to the new node
+            node.next = self.__head
+            self.__head.prev = node
+            self.__head = node
         else:
             self.__head = self.__tail = node
 
@@ -20,9 +20,9 @@ class Doubly:
         node = Node(data)
 
         if self.__head:
-            node.prev = self.__tail       # new node <- old tail
-            self.__tail.next = node       # old tail -> new node
-            self.__tail = node            # tail moves to the new node
+            node.prev = self.__tail
+            self.__tail.next = node
+            self.__tail = node
         else:
             self.__head = self.__tail = node
 
@@ -30,91 +30,197 @@ class Doubly:
         assert self.__head, "List is empty"
 
         current = self.__head
-        while current and current.data != key:
+
+        while current:
+            if current.data == key:
+                node = Node(data)
+
+                node.next = current.next
+                node.prev = current
+
+                if current.next:
+                    current.next.prev = node
+                else:
+                    self.__tail = node
+
+                current.next = node
+                return
+
             current = current.next
 
-        if not current:
-            raise ValueError("Key not found")
-
-        # key is the tail: same as add_last
-        if current is self.__tail:
-            self.add_last(data)
-            return
-
-        node = Node(data)
-        node.prev = current               # new node <- key node
-        node.next = current.next          # new node -> node after the key
-        current.next.prev = node          # node after the key <- new node
-        current.next = node               # key node -> new node
+        raise ValueError("Key not found")
 
     def add_before(self, data, key):
         assert self.__head, "List is empty"
 
-        current = self.__head
-        while current and current.data != key:
-            current = current.next
+        if self.__head.data == key:
+            node = Node(data)
 
-        if not current:
-            raise ValueError("Key not found")
-
-        # key is the head: same as add_first
-        if current is self.__head:
-            self.add_first(data)
+            node.next = self.__head
+            self.__head.prev = node
+            self.__head = node
             return
 
-        node = Node(data)
-        node.next = current               # new node -> key node
-        node.prev = current.prev          # new node <- node before the key
-        current.prev.next = node          # node before the key -> new node
-        current.prev = node               # key node <- new node
+        current = self.__head
+
+        while current:
+            if current.data == key:
+                node = Node(data)
+
+                node.prev = current.prev
+                node.next = current
+
+                current.prev.next = node
+                current.prev = node
+                return
+
+            current = current.next
+
+        raise ValueError("Key not found")
 
     def del_first(self):
         assert self.__head, "List is empty"
-        data = self.__head.data
 
-        if self.__head is self.__tail:    # one node left
+        if self.__head is self.__tail:
             self.__head = self.__tail = None
         else:
             self.__head = self.__head.next
             self.__head.prev = None
 
-        return data
-
     def del_last(self):
         assert self.__head, "List is empty"
-        data = self.__tail.data
 
-        if self.__head is self.__tail:    # one node left
+        if self.__head is self.__tail:
             self.__head = self.__tail = None
         else:
             self.__tail = self.__tail.prev
             self.__tail.next = None
 
-        return data
-
     def del_given(self, key):
         assert self.__head, "List is empty"
 
         current = self.__head
-        while current and current.data != key:
+
+        while current:
+            if current.data == key:
+
+                if current is self.__head:
+                    if self.__head is self.__tail:
+                        self.__head = self.__tail = None
+                    else:
+                        self.__head = self.__head.next
+                        self.__head.prev = None
+
+                elif current is self.__tail:
+                    self.__tail = self.__tail.prev
+                    self.__tail.next = None
+
+                else:
+                    current.prev.next = current.next
+                    current.next.prev = current.prev
+
+                return
+
             current = current.next
 
-        if not current:
-            raise ValueError("Key not found")
+        raise ValueError("Key not found")
 
-        if current is self.__head:
-            return self.del_first()
+    def length(self):
+        count = 0
+        current = self.__head
 
-        if current is self.__tail:
-            return self.del_last()
+        while current:
+            count += 1
+            current = current.next
 
-        current.prev.next = current.next  # node before -> node after
-        current.next.prev = current.prev  # node after <- node before
+        return count
 
-        return current.data
+    def total(self):
+        total = 0
+        current = self.__head
+
+        while current:
+            total += current.data
+            current = current.next
+
+        return total
+
+    def largest(self):
+        assert self.__head, "List is empty"
+
+        largest = self.__head.data
+        current = self.__head.next
+
+        while current:
+            if current.data > largest:
+                largest = current.data
+
+            current = current.next
+
+        return largest
+
+    def smallest(self):
+        assert self.__head, "List is empty"
+
+        smallest = self.__head.data
+        current = self.__head.next
+
+        while current:
+            if current.data < smallest:
+                smallest = current.data
+
+            current = current.next
+
+        return smallest
+
+    def reverse(self):
+        new_list = Doubly()
+
+        current = self.__tail
+
+        while current:
+            node = Node(current.data)
+
+            if new_list.__head is None:
+                new_list.__head = new_list.__tail = node
+            else:
+                node.next = new_list.__head
+                new_list.__head.prev = node
+                new_list.__head = node
+
+            current = current.prev
+
+        return new_list
+
+    def sort_asc(self):
+        current = self.__head
+
+        while current:
+            index = current.next
+
+            while index:
+                if current.data > index.data:
+                    current.data, index.data = index.data, current.data
+
+                index = index.next
+
+            current = current.next
+
+    def sort_desc(self):
+        current = self.__head
+
+        while current:
+            index = current.next
+
+            while index:
+                if current.data < index.data:
+                    current.data, index.data = index.data, current.data
+
+                index = index.next
+
+            current = current.next
 
     def display(self):
-        assert self.__head, "List is empty"
         current = self.__head
         output = ""
 
@@ -125,7 +231,6 @@ class Doubly:
         return output.strip()
 
     def display_reverse(self):
-        assert self.__head, "List is empty"
         current = self.__tail
         output = ""
 
@@ -135,89 +240,44 @@ class Doubly:
 
         return output.strip()
 
-    def head(self):
-        assert self.__head, "List is empty"
-        return self.__head.data
 
-    def tail(self):
-        assert self.__head, "List is empty"
-        return self.__tail.data
-
-    # ---------- the extra problems ----------
-
-    def length(self):
-        count = 0                       # start at 0
-        current = self.__head
-        while current:
-            count += 1                  # one more node
-            current = current.next
-        return count
-
-    def total(self):                    # sum of all values
-        total = 0                       # start at 0
-        current = self.__head
-        while current:
-            total += current.data       # add this node's value
-            current = current.next
-        return total
-
-    def largest(self):
-        assert self.__head, "List is empty"
-        current = self.__head
-        largest = current.data          # start with the FIRST value, not 0
-        while current:
-            if current.data > largest:
-                largest = current.data
-            current = current.next
-        return largest
-
-    def smallest(self):
-        assert self.__head, "List is empty"
-        current = self.__head
-        smallest = current.data         # start with the FIRST value, not 0
-        while current:
-            if current.data < smallest:
-                smallest = current.data
-            current = current.next
-        return smallest
-
-    def reverse(self):                  # returns a NEW reversed list
-        new_list = Doubly()             # an object created inside the class
-        current = self.__head
-        while current:
-            new_list.add_first(current.data)    # add_first flips the order
-            current = current.next
-        return new_list
-
-    def reverse_in_place(self):         # reverses THIS list (no new list)
-        current = self.__head
-        while current:
-            following = current.next                            # remember the next node
-            current.next, current.prev = current.prev, current.next   # swap its two links
-            current = following
-        self.__head, self.__tail = self.__tail, self.__head     # swap the ends
-
-
-
+# TESTING
 d = Doubly()
-for n in (7, 8, 9, 1, 2):
-    d.add_first(n)
-print(d.display())                 # 2 1 9 8 7
-print(d.display_reverse())         # 7 8 9 1 2
-d.add_last(5)
-d.add_after(6, 7)
-d.add_before(0, 2)
-print(d.display())                 # 0 2 1 9 8 7 6 5
-d.del_first()
-d.del_last()
-d.del_given(9)
-print(d.display())                 # 2 1 8 7 6
-print(d.display_reverse())         # 6 7 8 1 2
-print(d.head(), d.tail())          # 2 6
 
-print(d.length())                  # 5
-print(d.total())                   # 24
-print(d.largest(), d.smallest())   # 8 1
-print(d.reverse().display())       # 6 7 8 1 2
-d.reverse_in_place()
-print(d.display())                 # 6 7 8 1 2
+d.add_first(3)
+d.add_first(2)
+d.add_first(1)
+print("Add first:", d.display())
+
+d.add_last(4)
+print("Add last:", d.display())
+
+d.add_before(0, 1)
+print("Add before:", d.display())
+
+d.add_after(5, 4)
+print("Add after:", d.display())
+
+d.del_first()
+print("Delete first:", d.display())
+
+d.del_last()
+print("Delete last:", d.display())
+
+d.del_given(3)
+print("Delete given:", d.display())
+
+print("Length:", d.length())
+print("Total:", d.total())
+print("Largest:", d.largest())
+print("Smallest:", d.smallest())
+
+print("Reversed copy:", d.reverse().display())
+
+d.sort_asc()
+print("Ascending:", d.display())
+
+d.sort_desc()
+print("Descending:", d.display())
+
+print("Display backward:", d.display_reverse())
