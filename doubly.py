@@ -181,3 +181,34 @@ class Doubly:
             output += str(current.data) + " "
             current = current.next
         return output.strip()
+
+
+
+
+d = Doubly()
+d.add_first(3)
+d.add_first(2)
+d.add_first(1)
+print(d.display())
+d.add_last(4)
+print(d.display())
+d.add_after(5, 4)
+print(d.display())
+d.add_before(0, 1)
+print(d.display())
+d.del_first()
+print(d.display())
+d.del_last()
+print(d.display())
+d.del_given(4)
+print(d.display())
+print(d.length())
+print(d.total())
+print(d.largest())
+print(d.smallest())
+print(d.reverse().display())
+d.sort_asc()
+print(d.display())
+d.sort_desc()
+print(d.display())
+
