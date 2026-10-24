@@ -31,7 +31,6 @@ class Doubly:
                 node = Node(data)
                 node.next = current.next
                 node.prev = current
-                
                 if current.next:
                     current.next.prev = node
                 else:
@@ -70,7 +69,7 @@ class Doubly:
         else:
             self.__head = self.__head.next
             self.__head.prev = None
-            
+    
     def del_last(self):
         assert self.__head, "List is empty"
         if self.__head is self.__tail:
@@ -90,7 +89,7 @@ class Doubly:
                     else:
                         self.__head = self.__head.next
                         self.__head.prev = None
-                
+                        
                 elif current == self.__tail:
                     self.__tail = self.__tail.prev
                     self.__tail.next = None
@@ -98,7 +97,7 @@ class Doubly:
                 else:
                     current.prev.next = current.next
                     current.next.prev = current.prev
-                    
+                
                 return
             current = current.next
         raise ValueError("Key not found")
@@ -152,7 +151,7 @@ class Doubly:
                 new_list.__head = node
             current = current.next
         return new_list
-    
+        
     def sort_asc(self):
         current = self.__head
         while current:
@@ -173,6 +172,15 @@ class Doubly:
                 index = index.next
             current = current.next
             
+    def count_occur(self, key):
+        count = 0
+        current = self.__head
+        while current:
+            if current.data == key:
+                count += 1
+            current = current.next
+        return count
+            
     def display(self):
         assert self.__head, "List is empty"
         current = self.__head
@@ -181,34 +189,3 @@ class Doubly:
             output += str(current.data) + " "
             current = current.next
         return output.strip()
-
-
-
-
-d = Doubly()
-d.add_first(3)
-d.add_first(2)
-d.add_first(1)
-print(d.display())
-d.add_last(4)
-print(d.display())
-d.add_after(5, 4)
-print(d.display())
-d.add_before(0, 1)
-print(d.display())
-d.del_first()
-print(d.display())
-d.del_last()
-print(d.display())
-d.del_given(4)
-print(d.display())
-print(d.length())
-print(d.total())
-print(d.largest())
-print(d.smallest())
-print(d.reverse().display())
-d.sort_asc()
-print(d.display())
-d.sort_desc()
-print(d.display())
-
